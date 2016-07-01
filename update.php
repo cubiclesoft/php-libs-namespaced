@@ -11,13 +11,13 @@
 
 	$rootpath = str_replace("\\", "/", dirname(__FILE__));
 
+	require_once $rootpath . "/functions.php";
+
 	$srcpath = $rootpath . "/repos";
 	$destpath = $rootpath . "/support";
 
 	if (!is_dir($srcpath))  mkdir($srcpath);
 	if (!is_dir($destpath))  mkdir($destpath);
-
-	require_once $rootpath . "/repos/php-libs/functions.php";
 
 	// Update the registered repo list.  If nothing has changed, exit.
 	$numchanged = (int)GitRepoChanged($rootpath) + GitPull($srcpath);
@@ -82,7 +82,8 @@
 	copy($srcpath . "/php-libs/support/cacert.pem", $destpath . "/cacert.pem");
 
 	// Generate README.
-	GenerateReadme($srcpath . "/php-libs/readme_src/classes.json", $rootpath . "/readme_src/README.md", $rootpath . "/README.md", "\\\\CubicleSoft\\\\", $files, "support/", $srcpath);
+	copy($srcpath . "/php-libs/readme_src/classes.json", $rootpath . "/readme_src/classes.json");
+	GenerateReadme($rootpath . "/readme_src/classes.json", $rootpath . "/readme_src/README.md", $rootpath . "/README.md", "\\\\CubicleSoft\\\\", $files, "support/", $srcpath);
 
 	CommitRepo($rootpath);
 ?>
