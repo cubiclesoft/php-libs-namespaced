@@ -21,22 +21,22 @@
 
 		public static function IsSupported()
 		{
-			if (!is_bool(\CubicleSoft\DeflateStream::$supported))
+			if (!is_bool(self::$supported))
 			{
-				\CubicleSoft\DeflateStream::$supported = function_exists("stream_filter_append") && function_exists("stream_filter_remove") && function_exists("gzcompress");
-				if (\CubicleSoft\DeflateStream::$supported)
+				self::$supported = function_exists("stream_filter_append") && function_exists("stream_filter_remove") && function_exists("gzcompress");
+				if (self::$supported)
 				{
-					$data = \CubicleSoft\DeflateStream::Compress("test");
-					if ($data === false || $data === "")  \CubicleSoft\DeflateStream::$supported = false;
+					$data = self::Compress("test");
+					if ($data === false || $data === "")  self::$supported = false;
 					else
 					{
-						$data = \CubicleSoft\DeflateStream::Uncompress($data);
-						if ($data === false || $data !== "test")  \CubicleSoft\DeflateStream::$supported = false;
+						$data = self::Uncompress($data);
+						if ($data === false || $data !== "test")  self::$supported = false;
 					}
 				}
 			}
 
-			return \CubicleSoft\DeflateStream::$supported;
+			return self::$supported;
 		}
 
 		public static function Compress($data, $compresslevel = -1, $options = array())

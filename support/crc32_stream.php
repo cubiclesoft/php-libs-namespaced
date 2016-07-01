@@ -2,7 +2,7 @@
 	namespace CubicleSoft;
 ?><?php
 	// CRC32 stream class.
-	// (C) 2013 CubicleSoft.  All Rights Reserved.
+	// (C) 2016 CubicleSoft.  All Rights Reserved.
 	//
 	// Direct port from the CubicleSoft C++ implementation.
 
@@ -21,7 +21,7 @@
 
 		public function Init($options = false)
 		{
-			if ($options === false)  $options = \CubicleSoft\CRC32Stream::$default;
+			if ($options === false)  $options = self::$default;
 
 			$this->crctable = array();
 			$poly = $this->LIM32($options["poly"]);
@@ -47,7 +47,7 @@
 			$y = strlen($data);
 			for ($x < 0; $x < $y; $x++)
 			{
-				if ($this->datareflect)  $this->currcrc = $this->SHL32($this->currcrc, 8) ^ $this->crctable[$this->SHR32($this->currcrc, 24) ^ \CubicleSoft\CRC32Stream::$revlookup[ord($data{$x})]];
+				if ($this->datareflect)  $this->currcrc = $this->SHL32($this->currcrc, 8) ^ $this->crctable[$this->SHR32($this->currcrc, 24) ^ self::$revlookup[ord($data{$x})]];
 				else  $this->currcrc = $this->SHL32($this->currcrc, 8) ^ $this->crctable[$this->SHR32($this->currcrc, 24) ^ ord($data{$x})];
 			}
 
@@ -61,7 +61,7 @@
 			if ($this->crcreflect)
 			{
 				$tempcrc = $this->currcrc;
-				$this->currcrc = \CubicleSoft\CRC32Stream::$revlookup[$this->SHR32($tempcrc, 24)] | $this->SHL32(\CubicleSoft\CRC32Stream::$revlookup[$this->SHR32($tempcrc, 16) & 0xFF], 8) | $this->SHL32(\CubicleSoft\CRC32Stream::$revlookup[$this->SHR32($tempcrc, 8) & 0xFF], 16) | $this->SHL32(\CubicleSoft\CRC32Stream::$revlookup[$this->LIM32($tempcrc & 0xFF)], 24);
+				$this->currcrc = self::$revlookup[$this->SHR32($tempcrc, 24)] | $this->SHL32(self::$revlookup[$this->SHR32($tempcrc, 16) & 0xFF], 8) | $this->SHL32(self::$revlookup[$this->SHR32($tempcrc, 8) & 0xFF], 16) | $this->SHL32(self::$revlookup[$this->LIM32($tempcrc & 0xFF)], 24);
 			}
 			$result = $this->currcrc ^ $this->finalxor;
 
