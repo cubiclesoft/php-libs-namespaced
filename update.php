@@ -80,6 +80,7 @@
 
 	// CA certificates.
 	copy($srcpath . "/php-libs/support/cacert.pem", $destpath . "/cacert.pem");
+	copy($srcpath . "/php-libs/support/digitalocean_ca.pem", $destpath . "/digitalocean_ca.pem");
 
 	// Generate README.
 	copy($srcpath . "/php-libs/readme_src/classes.json", $rootpath . "/readme_src/classes.json");

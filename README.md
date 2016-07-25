@@ -42,6 +42,7 @@ Included and supported:
 
 Other:
 
+Class not included.  Possible bug.  * \\CubicleSoft\\DigitalOcean - A complete SDK for interacting with all DigitalOcean APIs.
 * \\CubicleSoft\\CalendarEvent_TZSwitch - Internal or undocumented class.  (support/calendar_event.php)
 * \\CubicleSoft\\CSDB_PDO_Statement - Internal or undocumented class.  (support/db.php)
 * \\CubicleSoft\\simple_html_dom_node - Internal or undocumented class.  (support/simple_html_dom.php)
