@@ -22,6 +22,7 @@ Included and supported:
 * \\CubicleSoft\\CSDB_sqlite_lite - Lightweight SQLite interface.  (support/db_sqlite_lite.php)
 * \\CubicleSoft\\CSPRNG - Cross-platform Cryptographically Secure Random Number Generator (CSPRNG).  Unlike nearly all of the classes out there that claim to implement a CSPRNG, this one actually does things correctly because I scoured the actual PHP C source code and spent the necessary time figuring out which calls called the system-level CSPRNG for each major platform.  This class also doesn't wimp out and fallback to some hocus-pocus, non-random, weak sauce solution - it throws an Exception which you intentionally and correctly do not ever catch.  (support/random.php)
 * \\CubicleSoft\\DeflateStream - Compresses/Uncompresses deflate data (including gzip) in a streaming format without intermediate files.  (support/deflate_stream.php)
+* \\CubicleSoft\\DigitalOcean - A complete SDK for interacting with all DigitalOcean APIs.  (support/sdk_digitalocean.php)
 * \\CubicleSoft\\EventManager - Register to listen for events whenever the application fires them.  Can be the basis of a plugin/module system.  (support/event_manager.php)
 * \\CubicleSoft\\HTTP - Baseline static functions in a class for performing all things HTTP.  Has powerful URL parsing tools (e.g. relative to absolute URL conversion).  Used primarily by WebBrowser.  Asynchronous capable.  (support/http.php)
 * \\CubicleSoft\\IPAddr - Static functions in a class for processing IPv4 and IPv6 addresses into a uniform format.  (support/ipaddr.php)
@@ -42,7 +43,6 @@ Included and supported:
 
 Other:
 
-Class not included.  Possible bug.  * \\CubicleSoft\\DigitalOcean - A complete SDK for interacting with all DigitalOcean APIs.
 * \\CubicleSoft\\CalendarEvent_TZSwitch - Internal or undocumented class.  (support/calendar_event.php)
 * \\CubicleSoft\\CSDB_PDO_Statement - Internal or undocumented class.  (support/db.php)
 * \\CubicleSoft\\simple_html_dom_node - Internal or undocumented class.  (support/simple_html_dom.php)
