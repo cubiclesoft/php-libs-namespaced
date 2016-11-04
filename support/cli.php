@@ -11,6 +11,7 @@
 			if (!isset($options["shortmap"]))  $options["shortmap"] = array();
 			if (!isset($options["rules"]))  $options["rules"] = array();
 			if (!isset($options["userinput"]))  $options["userinput"] = false;
+			if (!isset($options["allow_opts_after_param"]))  $options["allow_opts_after_param"] = true;
 
 			// Clean up shortmap and rules.
 			foreach ($options["shortmap"] as $key => $val)
@@ -67,6 +68,7 @@
 				if (isset($options["rules"][$val]) && !$options["rules"][$val]["arg"])  $chrs[$key] = true;
 			}
 
+			$allowopt = true;
 			$y = count($args);
 			for ($x = 0; $x < $y; $x++)
 			{
@@ -75,7 +77,7 @@
 				// Attempt to process an option.
 				$opt = false;
 				$optval = false;
-				if (substr($arg, 0, 1) == "-")
+				if ($allowopt && substr($arg, 0, 1) == "-")
 				{
 					$pos = strpos($arg, "=");
 					if ($pos === false)  $pos = strlen($arg);
@@ -124,6 +126,8 @@
 					if (substr($arg, -1) === "\"" || substr($arg, -1) === "'")  $arg = substr($arg, 0, -1);
 
 					$result["params"][] = $arg;
+
+					if (!$options["allow_opts_after_param"])  $allowopt = false;
 				}
 				else if (!$options["rules"][$opt]["arg"])
 				{
