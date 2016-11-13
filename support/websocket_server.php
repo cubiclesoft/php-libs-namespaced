@@ -447,7 +447,7 @@
 
 		public function GetClient($id)
 		{
-			return (isset($this->client[$id]) ? $this->client[$id] : false);
+			return (isset($this->clients[$id]) ? $this->clients[$id] : false);
 		}
 
 		public function RemoveClient($id)
