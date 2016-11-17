@@ -527,6 +527,41 @@
 			return true;
 		}
 
+		public function InitNewClient()
+		{
+			$client = new \CubicleSoft\WebServer_Client();
+
+			$client->id = $this->nextclientid;
+			$client->mode = "init";
+			$client->httpstate = false;
+			$client->readdata = "";
+			$client->request = false;
+			$client->url = "";
+			$client->headers = false;
+			$client->contenttype = false;
+			$client->contenthandled = true;
+			$client->cookievars = false;
+			$client->requestvars = false;
+			$client->requestcomplete = false;
+			$client->keepalive = true;
+			$client->requests = 0;
+			$client->responseheaders = false;
+			$client->responsefinalized = false;
+			$client->deflate = false;
+			$client->writedata = "";
+			$client->lastts = microtime(true);
+			$client->fp = false;
+			$client->ipaddr = false;
+			$client->currfile = false;
+			$client->files = array();
+
+			$this->initclients[$this->nextclientid] = $client;
+
+			$this->nextclientid++;
+
+			return $client;
+		}
+
 		// Handles new connections, the initial conversation, basic packet management, rate limits, and timeouts.
 		// Can wait on more streams than just sockets and/or more sockets.  Useful for waiting on other resources.
 		// 'http_s' and the 'http_c_' prefix are reserved.
@@ -549,35 +584,9 @@
 					// Enable non-blocking mode.
 					stream_set_blocking($fp, 0);
 
-					$client = new \CubicleSoft\WebServer_Client();
-
-					$client->id = $this->nextclientid;
-					$client->mode = "init";
-					$client->httpstate = false;
-					$client->readdata = "";
-					$client->request = false;
-					$client->url = "";
-					$client->headers = false;
-					$client->contenttype = false;
-					$client->contenthandled = true;
-					$client->cookievars = false;
-					$client->requestvars = false;
-					$client->requestcomplete = false;
-					$client->keepalive = true;
-					$client->requests = 0;
-					$client->responseheaders = false;
-					$client->responsefinalized = false;
-					$client->deflate = false;
-					$client->writedata = "";
-					$client->lastts = microtime(true);
+					$client = $this->InitNewClient();
 					$client->fp = $fp;
 					$client->ipaddr = stream_socket_get_name($fp, true);
-					$client->currfile = false;
-					$client->files = array();
-
-					$this->initclients[$this->nextclientid] = $client;
-
-					$this->nextclientid++;
 				}
 
 				unset($readfps["http_s"]);
