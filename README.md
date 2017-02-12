@@ -46,6 +46,9 @@ Other:
 * \\CubicleSoft\\CalendarEvent_TZSwitch - Internal or undocumented class.  (support/calendar_event.php)
 * \\CubicleSoft\\CSDB_PDO_Statement - Internal or undocumented class.  (support/db.php)
 * \\CubicleSoft\\simple_html_dom_node - Internal or undocumented class.  (support/simple_html_dom.php)
+* \\CubicleSoft\\TagFilterNode - Internal or undocumented class.  (support/tag_filter.php)
+* \\CubicleSoft\\TagFilterNodeIterator - Internal or undocumented class.  (support/tag_filter.php)
+* \\CubicleSoft\\TagFilterNodes - Internal or undocumented class.  (support/tag_filter.php)
 * \\CubicleSoft\\WebServer_TempFile - Internal or undocumented class.  (support/web_server.php)
 * \\CubicleSoft\\WebServer_Client - Internal or undocumented class.  (support/web_server.php)
 
