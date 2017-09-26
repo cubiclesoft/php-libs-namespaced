@@ -2,7 +2,7 @@
 	namespace CubicleSoft;
 ?><?php
 	// CubicleSoft PHP WebSocket class.
-	// (C) 2016 CubicleSoft.  All Rights Reserved.
+	// (C) 2017 CubicleSoft.  All Rights Reserved.
 
 	// Implements RFC 6455 (WebSocket protocol).
 	// Requires the CubicleSoft PHP HTTP/HTTPS class.
@@ -119,7 +119,7 @@
 
 			if (class_exists("\\CubicleSoft\\CSPRNG", false) && $this->csprng === false)  $this->csprng = new \CubicleSoft\CSPRNG();
 
-			if (isset($options["fp"]) && is_resource($options["fp"]))  $this->fp = $options["fp"];
+			if (isset($options["connected_fp"]) && is_resource($options["connected_fp"]))  $this->fp = $options["connected_fp"];
 			else
 			{
 				if (!class_exists("\\CubicleSoft\\WebBrowser", false))  require_once str_replace("\\", "/", dirname(__FILE__)) . "/web_browser.php";
@@ -322,7 +322,7 @@
 			if ($read)
 			{
 				$result = @fread($this->fp, 65536);
-				if ($result === false || feof($this->fp))  return array("success" => false, "error" => self::WSTranslate("ProcessQueuesAndTimeoutState() failed due to fread() failure.  Most likely cause:  Connection failure."), "errorcode" => "fread_failed");
+				if ($result === false || ($result === "" && feof($this->fp)))  return array("success" => false, "error" => self::WSTranslate("ProcessQueuesAndTimeoutState() failed due to fread() failure.  Most likely cause:  Connection failure."), "errorcode" => "fread_failed");
 
 				if ($result !== "")
 				{
@@ -342,7 +342,7 @@
 			if ($write)
 			{
 				$result = @fwrite($this->fp, $this->writedata);
-				if ($result === false || feof($this->fp))  return array("success" => false, "error" => self::WSTranslate("ProcessQueuesAndTimeoutState() failed due to fwrite() failure.  Most likely cause:  Connection failure."), "errorcode" => "fwrite_failed");
+				if ($result === false || ($result === "" && feof($this->fp)))  return array("success" => false, "error" => self::WSTranslate("ProcessQueuesAndTimeoutState() failed due to fwrite() failure.  Most likely cause:  Connection failure."), "errorcode" => "fwrite_failed");
 
 				$this->rawsendsize += strlen($result);
 				$this->writedata = (string)substr($this->writedata, $result);
