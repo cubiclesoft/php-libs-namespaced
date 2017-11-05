@@ -304,6 +304,13 @@
 									}
 								}
 							}
+
+							if ($state === "key")
+							{
+								$cx = $cy;
+
+								$state = "exit";
+							}
 						}
 						else if ($state === "equals")
 						{
@@ -353,6 +360,15 @@
 									}
 								}
 							}
+
+							if ($state === "equals")
+							{
+								$cx = $cy;
+
+								$attrs[$keyname] = true;
+
+								$state = "exit";
+							}
 						}
 						else if ($state === "value")
 						{
@@ -400,6 +416,15 @@
 
 									break;
 								}
+							}
+
+							if ($state === "value")
+							{
+								$cx = $cy;
+
+								$attrs[$keyname] = true;
+
+								$state = "exit";
 							}
 
 							if ($state === "key")
