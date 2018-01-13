@@ -915,7 +915,7 @@
 
 							$rownum = 0;
 							$altrow = false;
-							if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func($field["callback"]);
+							if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func_array($field["callback"], array($field));
 							while (count($field["rows"]))
 							{
 								foreach ($field["rows"] as $row)
@@ -947,7 +947,7 @@
 									$altrow = !$altrow;
 								}
 
-								if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func($field["callback"]);
+								if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func_array($field["callback"], array($field));
 								else  $field["rows"] = array();
 							}
 ?>
@@ -978,7 +978,7 @@
 
 							$rownum = 0;
 							$altrow = false;
-							if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func($field["callback"]);
+							if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func_array($field["callback"], array($field));
 							while (count($field["rows"]))
 							{
 								foreach ($field["rows"] as $row)
@@ -1009,7 +1009,7 @@
 									$altrow = !$altrow;
 								}
 
-								if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func($field["callback"]);
+								if (isset($field["callback"]) && is_callable($field["callback"]))  $field["rows"] = call_user_func_array($field["callback"], array($field));
 								else  $field["rows"] = array();
 							}
 ?>
