@@ -6,7 +6,7 @@
 
 	class FlexForms
 	{
-		protected $state, $secretkey, $extrainfo, $autononce;
+		protected $state, $secretkey, $extrainfo, $autononce, $version;
 		protected static $requesthostcache, $formhandlers;
 
 		public function __construct()
@@ -33,6 +33,7 @@
 			$this->secretkey = false;
 			$this->extrainfo = "";
 			$this->autononce = false;
+			$this->version = "";
 		}
 
 		public function GetState()
@@ -89,6 +90,11 @@
 			$this->extrainfo = (string)$extrainfo;
 		}
 
+		public function SetVersion($newversion)
+		{
+			$this->version = urlencode((string)$newversion);
+		}
+
 		public function CreateSecurityToken($action, $extra = "")
 		{
 			if ($this->secretkey === false)
@@ -141,7 +147,7 @@
 				else
 				{
 ?>
-	<link rel="stylesheet" href="<?php echo htmlspecialchars($this->state["supporturl"] . "/flex_forms.css"); ?>" type="text/css" media="all" />
+	<link rel="stylesheet" href="<?php echo htmlspecialchars($this->state["supporturl"] . "/flex_forms.css" . ($this->version !== "" ? (strpos($info["src"], "?") === false ? "?" : "&") . $this->version : "")); ?>" type="text/css" media="all" />
 <?php
 
 					$this->state["cssoutput"]["formcss"] = true;
@@ -1035,7 +1041,7 @@
 					{
 ?>
 			<div class="formitemdata">
-				<div class="customitemwrap"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . "\""; ?>>
+				<div id="<?php echo htmlspecialchars($id); ?>" class="customitemwrap"<?php if (isset($field["width"]))  echo " style=\"" . ($this->state["responsive"] ? "max-" : "") . "width: " . htmlspecialchars($field["width"]) . "\""; ?>>
 <?php
 						echo $field["value"];
 ?>
@@ -1120,6 +1126,8 @@
 ?>
 <script type="text/javascript">
 window.FlexForms = window.FlexForms || {
+	version: '<?php echo self::JSSafe($this->version); ?>',
+
 	modules: {},
 
 	Extend: function(target, src) {
@@ -1132,6 +1140,8 @@ window.FlexForms = window.FlexForms || {
 		var $this = this;
 
 		if ($this.cssoutput[name] !== undefined)  return;
+
+		if ($this.version !== '')  url += (url.indexOf('?') > -1 ? '&' : '?') + $this.version;
 
 		if (document.createStyleSheet)
 		{
@@ -1164,11 +1174,11 @@ window.FlexForms = window.FlexForms || {
 		$this.jsqueue[name].retriesleft = $this.jsqueue[name].retriesleft || 3;
 
 		s.onload = function() {
-			if (!done)  { done = true;  delete $this.jsqueue[name];  $this.ProcessJSQueue(); }
+			if (!done)  { done = true;  delete $this.jsqueue[name];  $this.ProcessJSQueue.call(window.FlexForms); }
 		};
 
 		s.onreadystatechange = function() {
-			if (!done && s.readyState === 'complete')  { done = true;  delete $this.jsqueue[name];  $this.ProcessJSQueue(); }
+			if (!done && s.readyState === 'complete')  { done = true;  delete $this.jsqueue[name];  $this.ProcessJSQueue.call(window.FlexForms); }
 		};
 
 		s.onerror = function() {
@@ -1181,12 +1191,12 @@ window.FlexForms = window.FlexForms || {
 				{
 					$this.jsqueue[name].loading = false;
 
-					setTimeout($this.ProcessJSQueue, 250);
+					setTimeout(function() { $this.ProcessJSQueue.call(window.FlexForms) }, 250);
 				}
 			}
 		};
 
-		s.src = $this.jsqueue[name].src;
+		s.src = $this.jsqueue[name].src + ($this.version === '' ? '' : ($this.jsqueue[name].src.indexOf('?') > -1 ? '&' : '?') + $this.version);
 
 		document.body.appendChild(s);
 	},
@@ -1214,7 +1224,7 @@ window.FlexForms = window.FlexForms || {
 		for (var name in $this.jsqueue) {
 			if ($this.jsqueue.hasOwnProperty(name))
 			{
-				if ($this.jsqueue[name].loading === false && ($this.jsqueue[name].dependency === false || $this.jsqueue[$this.jsqueue[name].dependency] === undefined))
+				if (($this.jsqueue[name].loading === undefined || $this.jsqueue[name].loading === false) && ($this.jsqueue[name].dependency === false || $this.jsqueue[$this.jsqueue[name].dependency] === undefined))
 				{
 					if ($this.jsqueue[name].detect !== undefined && $this.GetObjectFromPath($this.jsqueue[name].detect) !== undefined)  delete $this.jsqueue[name];
 					else if ($this.jsqueue[name].mode === "src")  $this.LoadJSQueueItem(name);
@@ -1234,7 +1244,7 @@ window.FlexForms = window.FlexForms || {
 	Init: function() {
 		var $this = this;
 
-		if ($this.ready)  $this.ProcessJSQueue();
+		if ($this.ready)  $this.ProcessJSQueue.call(window.FlexForms);
 		else if (!$this.initialized)
 		{
 			if (document.addEventListener)
@@ -1242,14 +1252,14 @@ window.FlexForms = window.FlexForms || {
 				function regevent(event) {
 					document.removeEventListener("DOMContentLoaded", regevent, false);
 
-					$this.ProcessJSQueue();
+					$this.ProcessJSQueue.call(window.FlexForms);
 				}
 
 				document.addEventListener("DOMContentLoaded", regevent);
 			}
 			else
 			{
-				setTimeout($this.ProcessJSQueue, 250);
+				setTimeout(function() { $this.ProcessJSQueue.call(window.FlexForms) }, 250);
 			}
 
 			$this.initialized = true;
@@ -1279,7 +1289,7 @@ window.FlexForms = window.FlexForms || {
 						if ($this->state["ajax"])  echo "FlexForms.LoadCSS('" . self::JSSafe($info["src"]) . "'" . (isset($info["media"]) ? ", '" . self::JSSafe($info["media"]) . "'" : "") . ");\n";
 						else
 						{
-							echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($info["src"]) . "\" type=\"text/css\" media=\"" . (isset($info["media"]) ? $info["media"] : "all") . "\" />\n";
+							echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($info["src"] . ($this->version !== "" ? (strpos($info["src"], "?") === false ? "?" : "&") . $this->version : "")) . "\" type=\"text/css\" media=\"" . (isset($info["media"]) ? $info["media"] : "all") . "\" />\n";
 
 							$this->state["cssoutput"][$name] = true;
 						}
@@ -1314,8 +1324,10 @@ window.FlexForms = window.FlexForms || {
 					{
 						if ($info["mode"] === "src")
 						{
+							$info["loading"] = false;
+
 							if ($this->state["ajax"])  echo "FlexForms.jsqueue['" . self::JSSafe($name) . "'] = " . json_encode($info, JSON_UNESCAPED_SLASHES) . ";\n";
-							else  echo "<script type=\"text/javascript\" src=\"" . htmlspecialchars($info["src"]) . "\"></script>\n";
+							else  echo "<script type=\"text/javascript\" src=\"" . htmlspecialchars($info["src"] . ($this->version !== "" ? (strpos($info["src"], "?") === false ? "?" : "&") . $this->version : "")) . "\"></script>\n";
 						}
 						else if ($info["mode"] === "inline")
 						{
