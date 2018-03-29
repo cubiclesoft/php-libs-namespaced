@@ -184,6 +184,7 @@
 						$result["url"] = $state["url"];
 						unset($state["options"]["files"]);
 						unset($state["options"]["body"]);
+						unset($state["tempoptions"]["headers"]["Content-Type"]);
 						$result["options"] = $state["options"];
 						$result["firstreqts"] = $state["startts"];
 						$result["numredirects"] = $state["numredirects"];
