@@ -113,7 +113,7 @@
 			return $this->rawsendsize;
 		}
 
-		public function Connect($url, $origin, $profile = "auto", $options = array(), $web = false)
+		public function Connect($url, $origin, $options = array(), $web = false)
 		{
 			$this->Disconnect();
 
@@ -147,7 +147,7 @@
 				unset($options["async"]);
 
 				// Connect to the WebSocket.
-				$result = $web->Process($url2, $profile, $options);
+				$result = $web->Process($url2, $options);
 				if (!$result["success"])  return $result;
 				if ($result["response"]["code"] != 101)  return array("success" => false, "error" => self::WSTranslate("\\CubicleSoft\\\CubicleSoft\WebSocket::Connect() failed to connect to the WebSocket.  Server returned:  %s %s", $result["response"]["code"], $result["response"]["meaning"]), "errorcode" => "incorrect_server_response");
 				if (!isset($result["headers"]["Sec-Websocket-Accept"]))  return array("success" => false, "error" => self::WSTranslate("Server failed to include a 'Sec-WebSocket-Accept' header in its response to the request."), "errorcode" => "missing_server_websocket_accept_header");
