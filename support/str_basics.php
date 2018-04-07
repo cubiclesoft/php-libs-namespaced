@@ -6,7 +6,7 @@
 
 	class Str
 	{
-		private static function ProcessSingleInput($data)
+		protected static function ProcessSingleInput($data)
 		{
 			foreach ($data as $key => $val)
 			{
