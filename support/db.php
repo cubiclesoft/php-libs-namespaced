@@ -2,7 +2,7 @@
 	namespace CubicleSoft;
 ?><?php
 	// CubicleSoft generic database base class.
-	// (C) 2015 CubicleSoft.  All Rights Reserved.
+	// (C) 2018 CubicleSoft.  All Rights Reserved.
 
 	class CSDB
 	{
@@ -43,7 +43,7 @@
 			return "";
 		}
 
-		public function __construct($dsn = "", $username = "", $password = "")
+		public function __construct($dsn = false, $username = false, $password = false, $options = array())
 		{
 			$this->numqueries = 0;
 			$this->totaltime = 0;
@@ -55,7 +55,7 @@
 			$this->currdb = false;
 			$this->available_status = $this->IsAvailable();
 
-			if ($dsn != "")  $this->Connect($dsn, $username, $password);
+			if ($dsn !== false)  $this->Connect($dsn, $username, $password, $options);
 		}
 
 		public function __destruct()
@@ -483,7 +483,7 @@
 			return array("success" => false, "error" => \CubicleSoft\CSDB::DB_Translate("The base class ProcessKeyDefinition() was called."), "errorcode" => "wrong_class_used");
 		}
 
-		// Not intended to be overridden, just accessible to the parent.
+		// Not intended to be overridden, just accessible to the derived class.
 		protected function ProcessSELECT(&$master, &$sql, &$opts, $queryinfo, $args, $subquery, $supported)
 		{
 			$sql = "SELECT";
