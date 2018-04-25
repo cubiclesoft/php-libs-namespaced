@@ -331,13 +331,13 @@
 													{
 														if ($client->currfile !== false)  $client->files[$client->currfile]->Close();
 
-														$filename = $this->cachedir . $id . "_" . count($client->files) . ".dat";
+														$filename = $this->cachedir . $id . "_" . $client->requests . "_" . count($client->files) . ".dat";
 														$client->currfile = $filename;
 
-														@unlink($filename);
+														if (file_exists($filename))  @unlink($filename);
 														$tempfile = new \CubicleSoft\WebServer_TempFile();
 														$tempfile->filename = $filename;
-														$tempfile->Open();
+														if ($tempfile->Open() === false)  return false;
 
 														$client->files[$filename] = $tempfile;
 														$this->AddClientRecvHeader($id, $client->mime_contentdisposition["name"], $tempfile);
@@ -402,13 +402,13 @@
 						{
 							$client->contenthandled = false;
 
-							$filename = $this->cachedir . $id . ".dat";
+							$filename = $this->cachedir . $id . "_" . $client->requests . ".dat";
 							$client->currfile = $filename;
 
-							@unlink($filename);
+							if (file_exists($filename))  @unlink($filename);
 							$tempfile = new \CubicleSoft\WebServer_TempFile();
 							$tempfile->filename = $filename;
-							$tempfile->Open();
+							if ($tempfile->Open() === false)  return false;
 
 							$client->files[$filename] = $tempfile;
 							$client->files[$filename]->Write($client->readdata);
@@ -933,7 +933,7 @@
 		{
 			$this->Close();
 
-			$this->fp = @fopen($this->filename, "w+b");
+			$this->fp = fopen($this->filename, "w+b");
 
 			return $this->fp;
 		}
@@ -942,7 +942,7 @@
 		{
 			if ($this->fp === false)  return false;
 
-			$data = @fread($this->fp, $size);
+			$data = fread($this->fp, $size);
 			if ($data === false || feof($this->fp))  $this->Close();
 			if ($data === false)  $data = "";
 
@@ -956,7 +956,7 @@
 
 		public function Close()
 		{
-			if (is_resource($this->fp))  @fclose($this->fp);
+			if (is_resource($this->fp))  fclose($this->fp);
 
 			$this->fp = false;
 		}
@@ -965,7 +965,7 @@
 		{
 			$this->Close();
 
-			@unlink($this->filename);
+			unlink($this->filename);
 		}
 	}
 
