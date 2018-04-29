@@ -334,6 +334,7 @@
 														$filename = $this->cachedir . $id . "_" . $client->requests . "_" . count($client->files) . ".dat";
 														$client->currfile = $filename;
 
+														if (!is_dir($this->cachedir))  @mkdir($this->cachedir, 0770, true);
 														if (file_exists($filename))  @unlink($filename);
 														$tempfile = new \CubicleSoft\WebServer_TempFile();
 														$tempfile->filename = $filename;
@@ -405,6 +406,7 @@
 							$filename = $this->cachedir . $id . "_" . $client->requests . ".dat";
 							$client->currfile = $filename;
 
+							if (!is_dir($this->cachedir))  @mkdir($this->cachedir, 0770, true);
 							if (file_exists($filename))  @unlink($filename);
 							$tempfile = new \CubicleSoft\WebServer_TempFile();
 							$tempfile->filename = $filename;
