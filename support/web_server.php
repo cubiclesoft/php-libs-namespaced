@@ -149,6 +149,8 @@
 
 		public function AddClientRecvHeader($id, $name, $val)
 		{
+			if ($name === "" && $val === "")  return;
+
 			$client = $this->clients[$id];
 
 			if (substr($name, -2) !== "[]")  $client->requestvars[$name] = $val;
@@ -761,10 +763,10 @@
 						}
 						else if ($client->keepalive && $client->requests < $this->maxrequests)
 						{
-							// Reset client.
+							// Reset client for another request.
 							$client->mode = "init_request";
+							$client->readdata = $client->httpstate["nextread"];
 							$client->httpstate = false;
-							$client->readdata = "";
 							$client->request = false;
 							$client->url = "";
 							$client->headers = false;
@@ -787,6 +789,8 @@
 
 							$this->initclients[$id] = $client;
 							unset($this->clients[$id]);
+
+							if ($client->readdata !== "")  $this->readyclients[$id] = $fp;
 						}
 						else
 						{
@@ -856,7 +860,8 @@
 								$result2["rawrecv"] = "";
 							}
 
-							$client->httpstate = \CubicleSoft\HTTP::InitResponseState($client->fp, $debug, $options, $startts, $timeout, $result2, false, "", false);
+							$client->httpstate = \CubicleSoft\HTTP::InitResponseState($client->fp, $debug, $options, $startts, $timeout, $result2, false, $client->readdata, false);
+							$client->readdata = "";
 							$client->mode = "handle_request";
 
 							$client->lastts = microtime(true);
