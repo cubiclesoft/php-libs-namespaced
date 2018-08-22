@@ -148,6 +148,9 @@
 			$client->websocket = false;
 			$client->fp = $fp;
 
+			// Intended for application storage.
+			$client->appdata = false;
+
 			$this->clients[$this->nextclientid] = $client;
 
 			$this->nextclientid++;
@@ -489,6 +492,8 @@
 			$client2->headers = $client->headers;
 			$client2->path = $path;
 			$client2->url = "ws://" . (isset($client->headers["Host"]) ? $client->headers["Host"] : "localhost") . $path;
+
+			$client2->appdata = $client->appdata;
 
 			$this->ProcessInitialResponse($method, $path, $client2);
 
