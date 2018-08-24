@@ -1129,8 +1129,6 @@
 			if ($this->requestcomplete && !$this->responsefinalized)
 			{
 				$this->responsebodysize = $bodysize;
-
-				if ($this->mode !== "handle_response")  $this->mode = "response_ready";
 			}
 		}
 
