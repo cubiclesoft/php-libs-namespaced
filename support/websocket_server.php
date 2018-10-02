@@ -449,6 +449,11 @@
 			return $this->clients;
 		}
 
+		public function NumClients()
+		{
+			return count($this->clients);
+		}
+
 		public function GetClient($id)
 		{
 			return (isset($this->clients[$id]) ? $this->clients[$id] : false);
