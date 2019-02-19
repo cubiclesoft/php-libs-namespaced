@@ -110,11 +110,11 @@
 
 			// Initialize the class.
 			$this->rng = new \CubicleSoft\CSPRNG();
-			$this->cipher1 = new Crypt_AES();
+			$this->cipher1 = new \CubicleSoft\Crypt_AES();
 			$this->cipher1->setKey($key1);
 			$this->cipher1->setIV($iv1);
 			$this->cipher1->disablePadding();
-			$this->cipher2 = new Crypt_AES();
+			$this->cipher2 = new \CubicleSoft\Crypt_AES();
 			$this->cipher2->setKey($key2);
 			$this->cipher2->setIV($iv2);
 			$this->cipher2->disablePadding();
@@ -197,11 +197,11 @@
 
 			// Initialize the class.
 			$this->rng = new \CubicleSoft\CSPRNG();
-			$this->cipher1 = new Crypt_AES();
+			$this->cipher1 = new \CubicleSoft\Crypt_AES();
 			$this->cipher1->setKey($key1);
 			$this->cipher1->setIV($iv1);
 			$this->cipher1->disablePadding();
-			$this->cipher2 = new Crypt_AES();
+			$this->cipher2 = new \CubicleSoft\Crypt_AES();
 			$this->cipher2->setKey($key2);
 			$this->cipher2->setIV($iv2);
 			$this->cipher2->disablePadding();
@@ -4539,12 +4539,12 @@
 			else
 			{
 				// Set up ciphers.
-				$cipher1 = new Crypt_AES();
+				$cipher1 = new \CubicleSoft\Crypt_AES();
 				$cipher1->setKey($key1);
 				$cipher1->setIV($iv1);
 				$cipher1->disablePadding();
 
-				$cipher2 = new Crypt_AES();
+				$cipher2 = new \CubicleSoft\Crypt_AES();
 				$cipher2->setKey($key2);
 				$cipher2->setIV($iv2);
 				$cipher2->disablePadding();
