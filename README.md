@@ -62,6 +62,7 @@ Other:
 * \\CubicleSoft\\Crypt_AES - Internal or undocumented class.  (support/AES.php)
 * \\CubicleSoft\\Crypt_Base - Internal or undocumented class.  (support/Base.php)
 * \\CubicleSoft\\CalendarEvent_TZSwitch - Internal or undocumented class.  (support/calendar_event.php)
+* \\CubicleSoft\\ColorTools - Internal or undocumented class.  (support/color_tools.php)
 * \\CubicleSoft\\CSDB_PDO_Statement - Internal or undocumented class.  (support/db.php)
 * \\CubicleSoft\\EFSS_FirstBlock - Internal or undocumented class.  (support/efss.php)
 * \\CubicleSoft\\EFSS_DirEntry_DirFile - Internal or undocumented class.  (support/efss.php)
@@ -76,6 +77,7 @@ Other:
 * \\CubicleSoft\\simple_html_dom_node - Internal or undocumented class.  (support/simple_html_dom.php)
 * \\CubicleSoft\\WebServer_TempFile - Internal or undocumented class.  (support/web_server.php)
 * \\CubicleSoft\\WebServer_Client - Internal or undocumented class.  (support/web_server.php)
+* \\CubicleSoft\\XTerm - Internal or undocumented class.  (support/xterm.php)
 
 Sources
 -------
