@@ -73,6 +73,7 @@ Other:
 * \\CubicleSoft\\EFSS_SymlinkCopyHelper - Internal or undocumented class.  (support/efss.php)
 * \\CubicleSoft\\EFSS_FileCopyHelper - Internal or undocumented class.  (support/efss.php)
 * \\CubicleSoft\\EFSSIncremental - Internal or undocumented class.  (support/efss.php)
+* \\CubicleSoft\\EmailBuilder - Internal or undocumented class.  (support/email_builder.php)
 * \\CubicleSoft\\Crypt_Rijndael - Internal or undocumented class.  (support/Rijndael.php)
 * \\CubicleSoft\\simple_html_dom_node - Internal or undocumented class.  (support/simple_html_dom.php)
 * \\CubicleSoft\\WebServer_TempFile - Internal or undocumented class.  (support/web_server.php)
