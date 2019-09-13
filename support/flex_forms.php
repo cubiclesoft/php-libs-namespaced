@@ -1086,7 +1086,7 @@
 				if ($this->state["responsive"] && $this->state["insiderowwidth"])  echo "<td></td>";
 
 ?>
-			</tr></table></div>
+			</tr></tbody></table></div>
 <?php
 			}
 
