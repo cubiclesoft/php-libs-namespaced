@@ -881,7 +881,7 @@
 					}
 					case "table":
 					{
-						$idbase = $id . "_" . (isset($field["name"]) ? $field["name"] : "table");
+						$idbase = $id . "_table";
 
 ?>
 			<div class="formitemdata">
