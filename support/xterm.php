@@ -2,7 +2,7 @@
 	namespace CubicleSoft;
 ?><?php
 	// XTerm ANSI escape code emitter.
-	// (C) 2019 CubicleSoft.  All Rights Reserved.
+	// (C) 2020 CubicleSoft.  All Rights Reserved.
 
 	// Sources:
 	//   https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
@@ -187,7 +187,7 @@
 			else if (is_string($fgcolor))
 			{
 				$fgcolor = preg_replace('/[^0-9a-f]/', "", strtolower($fgcolor));
-				if (strlen($fgcolor) == 3)  $fgcolor = $fgcolor{0} . $fgcolor{0} . $fgcolor{1} . $fgcolor{1} . $fgcolor{2} . $fgcolor{2};
+				if (strlen($fgcolor) == 3)  $fgcolor = $fgcolor[0] . $fgcolor[0] . $fgcolor[1] . $fgcolor[1] . $fgcolor[2] . $fgcolor[2];
 
 				if (strlen($fgcolor) >= 6)  echo "\x1B[38;2;" . hexdec(substr($fgcolor, 0, 2)) . ";" . hexdec(substr($fgcolor, 2, 2)) . ";" . hexdec(substr($fgcolor, 4, 2)) . "m";
 			}
@@ -204,7 +204,7 @@
 			else if (is_string($bgcolor))
 			{
 				$bgcolor = preg_replace('/[^0-9a-f]/', "", strtolower($bgcolor));
-				if (strlen($bgcolor) == 3)  $bgcolor = $bgcolor{0} . $bgcolor{0} . $bgcolor{1} . $bgcolor{1} . $bgcolor{2} . $bgcolor{2};
+				if (strlen($bgcolor) == 3)  $bgcolor = $bgcolor[0] . $bgcolor[0] . $bgcolor[1] . $bgcolor[1] . $bgcolor[2] . $bgcolor[2];
 
 				if (strlen($bgcolor) >= 6)  echo "\x1B[48;2;" . hexdec(substr($bgcolor, 0, 2)) . ";" . hexdec(substr($bgcolor, 2, 2)) . ";" . hexdec(substr($bgcolor, 4, 2)) . "m";
 			}

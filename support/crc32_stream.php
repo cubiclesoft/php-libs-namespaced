@@ -2,7 +2,7 @@
 	namespace CubicleSoft;
 ?><?php
 	// CRC32 stream class.
-	// (C) 2016 CubicleSoft.  All Rights Reserved.
+	// (C) 2020 CubicleSoft.  All Rights Reserved.
 	//
 	// Direct port from the CubicleSoft C++ implementation.
 
@@ -47,8 +47,8 @@
 			$y = strlen($data);
 			for ($x < 0; $x < $y; $x++)
 			{
-				if ($this->datareflect)  $this->currcrc = $this->SHL32($this->currcrc, 8) ^ $this->crctable[$this->SHR32($this->currcrc, 24) ^ self::$revlookup[ord($data{$x})]];
-				else  $this->currcrc = $this->SHL32($this->currcrc, 8) ^ $this->crctable[$this->SHR32($this->currcrc, 24) ^ ord($data{$x})];
+				if ($this->datareflect)  $this->currcrc = $this->SHL32($this->currcrc, 8) ^ $this->crctable[$this->SHR32($this->currcrc, 24) ^ self::$revlookup[ord($data[$x])]];
+				else  $this->currcrc = $this->SHL32($this->currcrc, 8) ^ $this->crctable[$this->SHR32($this->currcrc, 24) ^ ord($data[$x])];
 			}
 
 			return true;

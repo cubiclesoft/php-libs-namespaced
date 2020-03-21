@@ -82,8 +82,11 @@ Other:
 * \\CubicleSoft\\EFSS_SymlinkCopyHelper - Internal or undocumented class.  (support/efss.php)
 * \\CubicleSoft\\EFSS_FileCopyHelper - Internal or undocumented class.  (support/efss.php)
 * \\CubicleSoft\\EFSSIncremental - Internal or undocumented class.  (support/efss.php)
+* \\CubicleSoft\\LibEvGenericServer - Internal or undocumented class.  (support/generic_server_libev.php)
 * \\CubicleSoft\\Crypt_Rijndael - Internal or undocumented class.  (support/Rijndael.php)
+* \\CubicleSoft\\SerialNumber - Internal or undocumented class.  (support/serial_number.php)
 * \\CubicleSoft\\simple_html_dom_node - Internal or undocumented class.  (support/simple_html_dom.php)
+* \\CubicleSoft\\LibEvWebSocketServer - Internal or undocumented class.  (support/websocket_server_libev.php)
 * \\CubicleSoft\\WebServer_TempFile - Internal or undocumented class.  (support/web_server.php)
 * \\CubicleSoft\\WebServer_Client - Internal or undocumented class.  (support/web_server.php)
 

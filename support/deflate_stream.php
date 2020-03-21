@@ -2,7 +2,7 @@
 	namespace CubicleSoft;
 ?><?php
 	// Deflate stream class.  Default is RFC1951 (raw deflate).  Supports RFC1950 (ZLIB) and RFC1952 (gzip).
-	// (C) 2016 CubicleSoft.  All Rights Reserved.
+	// (C) 2020 CubicleSoft.  All Rights Reserved.
 
 	class DeflateStream
 	{
@@ -142,7 +142,7 @@
 					$y = strlen($data);
 					for ($x = 0; $x < $y; $x++)
 					{
-						$this->options["a"] = ($this->options["a"] + ord($data{$x})) % 65521;
+						$this->options["a"] = ($this->options["a"] + ord($data[$x])) % 65521;
 						$this->options["b"] = ($this->options["b"] + $this->options["a"]) % 65521;
 					}
 				}
@@ -227,7 +227,7 @@
 					$zlibtest = unpack("n", substr($this->indata, 0, 2));
 
 					if (substr($this->indata, 0, 3) === "\x1F\x8B\x08")  $this->options["type"] = "gzip";
-					else if ((ord($this->indata{0}) & 0x0F) == 8 && ((ord($this->indata{0}) & 0xF0) >> 4) < 8 && $zlibtest[1] % 31 == 0)  $this->options["type"] = "zlib";
+					else if ((ord($this->indata[0]) & 0x0F) == 8 && ((ord($this->indata[0]) & 0xF0) >> 4) < 8 && $zlibtest[1] % 31 == 0)  $this->options["type"] = "zlib";
 					else  $this->options["type"] = "raw";
 				}
 				else if ($final)  $this->options["type"] = "raw";
@@ -240,7 +240,7 @@
 					if (strlen($this->indata) >= 10)
 					{
 						$idcm = substr($this->indata, 0, 3);
-						$flg = ord($this->indata{3});
+						$flg = ord($this->indata[3]);
 
 						if ($idcm !== "\x1F\x8B\x08")  $this->options["type"] = "ignore";
 						else
@@ -302,8 +302,8 @@
 				{
 					if (strlen($this->indata) >= 2)
 					{
-						$cmf = ord($this->indata{0});
-						$flg = ord($this->indata{1});
+						$cmf = ord($this->indata[0]);
+						$flg = ord($this->indata[1]);
 						$cm = $cmf & 0x0F;
 						$cinfo = ($cmf & 0xF0) >> 4;
 
