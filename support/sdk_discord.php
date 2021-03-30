@@ -36,7 +36,7 @@
 				)
 			);
 
-			if ($fileinfo !== false)  $options["files"] = array($fileinfo);
+			if ($fileinfo !== false)  $options["files"] = (isset($fileinfo["name"]) ? array($fileinfo) : $fileinfo);
 
 			$web = new \CubicleSoft\WebBrowser();
 
