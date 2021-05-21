@@ -77,6 +77,7 @@ Other:
 * \\CubicleSoft\\Crypt_Base - Internal or undocumented class.  (support/Base.php)
 * \\CubicleSoft\\CalendarEvent_TZSwitch - Internal or undocumented class.  (support/calendar_event.php)
 * \\CubicleSoft\\CSDB_PDO_Statement - Internal or undocumented class.  (support/db.php)
+* \\CubicleSoft\\DOHWebBrowser - Internal or undocumented class.  (support/doh_web_browser.php)
 * \\CubicleSoft\\EFSS_FirstBlock - Internal or undocumented class.  (support/efss.php)
 * \\CubicleSoft\\EFSS_DirEntry_DirFile - Internal or undocumented class.  (support/efss.php)
 * \\CubicleSoft\\EFSS_DirEntries - Internal or undocumented class.  (support/efss.php)
