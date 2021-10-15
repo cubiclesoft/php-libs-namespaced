@@ -222,7 +222,7 @@
 				$TempChr = ord($currline[0]);
 				if ($TempChr == $space || $TempChr == $tab)
 				{
-					if ($lastheader != "")  $result["headers"][$lastheader] .= " " . self::ConvertFromRFC1342(ltrim($currline));
+					if ($lastheader != "")  $result["headers"][$lastheader][count($result["headers"][$lastheader]) - 1] .= " " . self::ConvertFromRFC1342(ltrim($currline));
 				}
 				else
 				{
@@ -230,7 +230,8 @@
 					if ($pos !== false)
 					{
 						$lastheader = strtolower(substr($currline, 0, $pos));
-						$result["headers"][$lastheader] = self::ConvertFromRFC1342(ltrim(substr($currline, $pos + 1)));
+						if (!isset($result["headers"][$lastheader]))  $result["headers"][$lastheader] = array();
+						$result["headers"][$lastheader][] = self::ConvertFromRFC1342(ltrim(substr($currline, $pos + 1)));
 					}
 				}
 			}
@@ -239,7 +240,7 @@
 			$data = implode("\r\n", array_slice($data, $x + 1));
 			if (isset($result["headers"]["content-transfer-encoding"]))
 			{
-				$encoding = self::ExplodeHeader($result["headers"]["content-transfer-encoding"]);
+				$encoding = self::ExplodeHeader($result["headers"]["content-transfer-encoding"][0]);
 				if (isset($encoding[""]))
 				{
 					if ($encoding[""] == "base64")  $data = base64_decode(preg_replace("/\\s/", "", $data));
@@ -255,7 +256,7 @@
 			}
 			else
 			{
-				$contenttype = self::ExplodeHeader($result["headers"]["content-type"]);
+				$contenttype = self::ExplodeHeader($result["headers"]["content-type"][0]);
 				if (array_key_exists("charset", $contenttype))
 				{
 					$data2 = self::ConvertCharset($data, $contenttype["charset"], "UTF-8");
@@ -299,7 +300,7 @@
 			if (!isset($message["headers"]["content-type"]))  $result["text/plain"] = $message["body"];
 			else
 			{
-				$contenttype = self::ExplodeHeader($message["headers"]["content-type"]);
+				$contenttype = self::ExplodeHeader($message["headers"]["content-type"][0]);
 				if (!isset($contenttype[""]))  $result["text/plain"] = $message["body"];
 				else if (strtolower($contenttype[""]) == "text/plain")  $result["text/plain"] = $message["body"];
 				else if (strtolower($contenttype[""]) == "text/html")  $result["text/html"] = $message["body"];

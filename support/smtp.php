@@ -2,7 +2,7 @@
 	namespace CubicleSoft;
 ?><?php
 	// CubicleSoft PHP SMTP e-mail functions.
-	// (C) 2020 CubicleSoft.  All Rights Reserved.
+	// (C) 2021 CubicleSoft.  All Rights Reserved.
 
 	// Load dependencies.
 	if (!class_exists("\\CubicleSoft\\UTF8", false))  require_once str_replace("\\", "/", dirname(__FILE__)) . "/utf8.php";
@@ -10,6 +10,7 @@
 
 	class SMTP
 	{
+		public static $dnsnameservers = false;
 		public static $dnsttlcache = array();
 		private static $depths = array();
 
@@ -243,7 +244,7 @@
 						}
 						else if ($lastchr == "," || $lastchr == ".")  $domain .= ".";
 						else if ($lastchr == ";" || $lastchr == ":")  $domain .= ":";
-						else if (preg_match('/[A-Za-z0-9]/', $lastchr))  $domain .= $lastchr;
+						else if (preg_match('/[A-Fa-f0-9]/', $lastchr))  $domain .= $lastchr;
 
 						$email = trim(substr($email, 0, -1));
 
@@ -265,7 +266,7 @@
 							break;
 						}
 						else if ($lastchr == "," || $lastchr == ".")  $domain .= ".";
-						else if (preg_match('/[A-Za-z0-9-]/', $lastchr))  $domain .= $lastchr;
+						else if (preg_match('/[A-Za-z0-9-]/', $lastchr) || ord($lastchr) > 0x7F)  $domain .= $lastchr;
 
 						$email = trim(substr($email, 0, -1));
 
@@ -285,6 +286,7 @@
 			$parts = explode(".", $domain);
 			foreach ($parts as $num => $part)  $parts[$num] = str_replace(" ", "-", trim(str_replace("-", " ", $part)));
 			$domain = implode(".", $parts);
+			$domain = self::GetIDNAHost($domain);
 
 			// Forward parse out the local part of the e-mail address.
 			// Remove CFWS (comments, folding whitespace).
@@ -309,9 +311,9 @@
 			}
 
 			// Process quoted/unquoted string.
-			$local = "";
 			if (substr($email, 0, 1) == "\"")
 			{
+				$local = "\"";
 				$email = substr($email, 1);
 				while ($email != "")
 				{
@@ -325,14 +327,14 @@
 							$local .= substr($email, 0, 2);
 							$email = substr($email, 2);
 						}
-						else if (ord($nextchr) >= 33 && ord($nextchr) <= 126)
+						else if (ord($nextchr) >= 32)
 						{
 							$local .= substr($email, 1, 1);
 							$email = substr($email, 2);
 						}
 					}
 					else if ($currchr == "\"")  break;
-					else if (ord($currchr) >= 33 && ord($nextchr) <= 126)
+					else if (ord($currchr) >= 32)
 					{
 						$local .= substr($email, 0, 1);
 						$email = substr($email, 1);
@@ -344,11 +346,12 @@
 			}
 			else
 			{
+				$local = "";
 				while ($email != "")
 				{
 					$currchr = substr($email, 0, 1);
 
-					if (preg_match("/[A-Za-z0-9]/", $currchr) || $currchr == "!" || $currchr == "#" || $currchr == "\$" || $currchr == "%" || $currchr == "&" || $currchr == "'" || $currchr == "*" || $currchr == "+" || $currchr == "-" || $currchr == "/" || $currchr == "=" || $currchr == "?" || $currchr == "^" || $currchr == "_" || $currchr == "`"  || $currchr == "{" || $currchr == "|" || $currchr == "}" || $currchr == "~" || $currchr == ".")
+					if (preg_match('/[A-Za-z0-9]/', $currchr) || ord($lastchr) > 0x7F || $currchr == "!" || $currchr == "#" || $currchr == "\$" || $currchr == "%" || $currchr == "&" || $currchr == "'" || $currchr == "*" || $currchr == "+" || $currchr == "-" || $currchr == "/" || $currchr == "=" || $currchr == "?" || $currchr == "^" || $currchr == "_" || $currchr == "`"  || $currchr == "{" || $currchr == "|" || $currchr == "}" || $currchr == "~" || $currchr == ".")
 					{
 						$local .= $currchr;
 						$email = substr($email, 1);
@@ -362,6 +365,7 @@
 			}
 			while (substr($local, -2) == "\\\"")  $local = substr($local, 0, -2) . "\"";
 			if ($local == "\"" || $local == "\"\"")  $local = "";
+			$local = \CubicleSoft\UTF8::MakeValid($local);
 
 			// Analyze the domain/IP part and fix any issues.
 			$domain = preg_replace('/[.]+/', ".", $domain);
@@ -413,7 +417,7 @@
 			else
 			{
 				// Check for a mail server based on a DNS lookup.
-				$result = self::GetDNSRecord($domain, array("MX", "A"), (isset($options["nameservers"]) ? $options["nameservers"] : array("8.8.8.8", "8.8.4.4")), (!isset($options["usednsttlcache"]) || $options["usednsttlcache"] === true));
+				$result = self::GetDNSRecord($domain, array("MX", "A"), (isset($options["nameservers"]) ? $options["nameservers"] : true), (!isset($options["usednsttlcache"]) || $options["usednsttlcache"] === true));
 				if ($result["success"])  $result = array("success" => true, "email" => $email, "lookup" => true, "type" => $result["type"], "domain" => $domain, "records" => $result["records"]);
 			}
 
@@ -429,8 +433,35 @@
 			}
 		}
 
-		public static function GetDNSRecord($domain, $types = array("MX", "A"), $nameservers = array("8.8.8.8", "8.8.4.4"), $cache = true)
+		public static function GetDNSRecord($domain, $types = array("MX", "A"), $nameservers = true, $cache = true)
 		{
+			// Process local system or preferred DNS nameservers.
+			if (!is_array($nameservers))
+			{
+				if (is_array(self::$dnsnameservers))  $nameservers = self::$dnsnameservers;
+				else
+				{
+					$data = @file_get_contents("/etc/resolv.conf");
+					if ($data === false)  $nameservers = array();
+					else
+					{
+						$nameservers = array();
+						$lines = explode("\n", $data);
+						foreach ($lines as $line)
+						{
+							$line = preg_replace('/\s+/', " ", trim($line));
+							if (substr($line, 0, 11) === "nameserver ")  $nameservers[trim(substr($line, 11))] = true;
+						}
+
+						$nameservers = array_keys($nameservers);
+					}
+				}
+			}
+
+			if (!count($nameservers))  $nameservers = array("1.1.1.1", "8.8.8.8", "8.8.4.4");
+
+			self::$dnsnameservers = $nameservers;
+
 			// Check for a mail server based on a DNS lookup.
 			if (!class_exists("\\Net_DNS2_Resolver", false))  require_once str_replace("\\", "/", dirname(__FILE__)) . "/Net/DNS2.php";
 
@@ -565,7 +596,7 @@
 							}
 							else if ($lastchr == "," || $lastchr == ".")  $email .= ".";
 							else if ($lastchr == ";" || $lastchr == ":")  $email .= ":";
-							else if (preg_match('/[A-Za-z0-9]/', $lastchr))  $email .= $lastchr;
+							else if (preg_match('/[A-Fa-f0-9]/', $lastchr))  $email .= $lastchr;
 
 							$data = trim(substr($data, 0, -1));
 
@@ -587,7 +618,7 @@
 								break;
 							}
 							else if ($lastchr == "," || $lastchr == ".")  $email .= ".";
-							else if (preg_match('/[A-Za-z0-9-]/', $lastchr))  $email .= $lastchr;
+							else if (preg_match('/[A-Za-z0-9-]/', $lastchr) || ord($lastchr) > 0x7F)  $email .= $lastchr;
 
 							$data = trim(substr($data, 0, -1));
 
@@ -645,7 +676,7 @@
 						}
 						case "local":
 						{
-							if (preg_match("/[A-Za-z0-9]/", $lastchr) || $lastchr == "!" || $lastchr == "#" || $lastchr == "\$" || $lastchr == "%" || $lastchr == "&" || $lastchr == "'" || $lastchr == "*" || $lastchr == "+" || $lastchr == "-" || $lastchr == "/" || $lastchr == "=" || $lastchr == "?" || $lastchr == "^" || $lastchr == "_" || $lastchr == "`"  || $lastchr == "{" || $lastchr == "|" || $lastchr == "}" || $lastchr == "~" || $lastchr == ".")
+							if (preg_match('/[A-Za-z0-9]/', $lastchr) || ord($lastchr) > 0x7F || $lastchr == "!" || $lastchr == "#" || $lastchr == "\$" || $lastchr == "%" || $lastchr == "&" || $lastchr == "'" || $lastchr == "*" || $lastchr == "+" || $lastchr == "-" || $lastchr == "/" || $lastchr == "=" || $lastchr == "?" || $lastchr == "^" || $lastchr == "_" || $lastchr == "`"  || $lastchr == "{" || $lastchr == "|" || $lastchr == "}" || $lastchr == "~" || $lastchr == ".")
 							{
 								$email .= $lastchr;
 								$data = substr($data, 0, -1);
@@ -1293,6 +1324,13 @@
 				else if (file_exists(str_replace("\\", "/", dirname(__FILE__)) . "/cacert.pem"))  $options[$key]["cafile"] = str_replace("\\", "/", dirname(__FILE__)) . "/cacert.pem";
 			}
 
+			if (isset($options[$key]["auto_peer_name"]))
+			{
+				unset($options[$key]["auto_peer_name"]);
+
+				$options[$key]["peer_name"] = $host;
+			}
+
 			if (isset($options[$key]["auto_cn_match"]))
 			{
 				unset($options[$key]["auto_cn_match"]);
@@ -1307,6 +1345,22 @@
 				$options[$key]["SNI_enabled"] = true;
 				$options[$key]["SNI_server_name"] = $host;
 			}
+		}
+
+		protected static function GetIDNAHost($host)
+		{
+			$y = strlen($host);
+			for ($x = 0; $x < $y && ord($host[$x]) <= 0x7F; $x++);
+
+			if ($x < $y)
+			{
+				if (!class_exists("\\CubicleSoft\\UTFUtils", false))  require_once str_replace("\\", "/", dirname(__FILE__)) . "/utf_utils.php";
+
+				$host2 = \CubicleSoft\UTFUtils::ConvertToPunycode($host);
+				if ($host2 !== false)  $host = $host2;
+			}
+
+			return $host;
 		}
 
 		// Sends an e-mail by directly connecting to a SMTP server using PHP sockets.  Much more powerful than calling mail().
@@ -1324,7 +1378,7 @@
 			if (!self::EmailAddressesToNamesAndEmail($temptonames, $temptoaddrs, $toaddr, true, $options))  return array("success" => false, "error" => self::SMTP_Translate("Invalid 'To' e-mail address(es)."), "errorcode" => "invalid_to_address", "info" => $toaddr);
 			if (!self::EmailAddressesToNamesAndEmail($tempfromnames, $tempfromaddrs, $fromaddr, true, $options))  return array("success" => false, "error" => self::SMTP_Translate("Invalid 'From' e-mail address."), "errorcode" => "invalid_from_address", "info" => $fromaddr);
 
-			$server = (isset($options["server"]) ? $options["server"] : "localhost");
+			$server = (isset($options["server"]) ? self::GetIDNAHost(trim($options["server"])) : "localhost");
 			if ($server == "")  return array("success" => false, "error" => self::SMTP_Translate("Invalid server specified."), "errorcode" => "invalid_server");
 			$secure = (isset($options["secure"]) ? $options["secure"] : false);
 			$async = (isset($options["async"]) ? $options["async"] : false);
@@ -1377,8 +1431,12 @@
 					if (isset($options["source_ip"]))  $context["socket"] = array("bindto" => $options["source_ip"] . ":0");
 					if ($secure)
 					{
-						if (!isset($options["sslopts"]) || !is_array($options["sslopts"]))  $options["sslopts"] = self::GetSafeSSLOpts();
-						self::ProcessSSLOptions($options, "sslopts", $server);
+						if (!isset($options["sslopts"]) || !is_array($options["sslopts"]))
+						{
+							$options["sslopts"] = self::GetSafeSSLOpts();
+							$options["sslopts"]["auto_peer_name"] = true;
+						}
+						self::ProcessSSLOptions($options, "sslopts", (isset($options["sslhostname"]) ? self::GetIDNAHost($options["sslhostname"]) : $server));
 						foreach ($options["sslopts"] as $key => $val)  @stream_context_set_option($context, "ssl", $key, $val);
 					}
 
@@ -1637,6 +1695,74 @@
 
 			return array("success" => true);
 		}
+
+		// Special function for generating MAILER-DAEMON style rejection emails.
+		public static function CreateDeliveryStatusMessage($host, $fromaddr, $toaddr, $subject, $notificationmsg, $sender, $origrecipient, $finalrecipient, $action, $status, $diagcode, $origmsg = false, $options = array())
+		{
+			$subject = str_replace("\r", " ", $subject);
+			$subject = str_replace("\n", " ", $subject);
+			if (!\CubicleSoft\UTF8::IsASCII($subject))  $subject = self::ConvertToRFC1342($subject);
+
+			$headers = (isset($options["headers"]) ? $options["headers"] : "");
+
+			$messagefromaddr = self::EmailAddressesToEmailHeaders($fromaddr, "From", false, false, $options);
+			if ($messagefromaddr == "")  return array("success" => false, "error" => self::SMTP_Translate("From address is invalid."), "errorcode" => "invalid_from_address", "info" => $fromaddr);
+			$messagetoaddr = self::EmailAddressesToEmailHeaders($toaddr, "To", true, false, $options);
+
+			$mimeboundary = self::MIME_RandomString(25) . "/" . $host;
+			$destheaders = "";
+			$destheaders .= rtrim($messagefromaddr) . " (Mail Delivery System)\r\n";
+			$destheaders .= "Subject: " . $subject . "\r\n";
+			$destheaders .= $messagetoaddr;
+			if ($headers != "")  $destheaders .= $headers;
+			$destheaders .= "Auto-Submitted: auto-replied\r\n";
+			$destheaders .= "MIME-Version: 1.0\r\n";
+			$destheaders .= "Content-Type: multipart/report; report-type=delivery-status; boundary=\"" . $mimeboundary . "\"\r\n";
+			$destheaders .= "Content-Transfer-Encoding: 8bit\r\n";
+
+			$message = "This is a MIME-encapsulated message.\r\n";
+			$message .= "\r\n";
+
+			$message .= "--" . $mimeboundary . "\r\n";
+			$message .= "Content-Description: Notification\r\n";
+			$message .= "Content-Type: text/plain; charset=utf-8\r\n";
+			$message .= "Content-Transfer-Encoding: 8bit\r\n";
+			$message .= "\r\n";
+			$message .= $notificationmsg . "\r\n";
+
+			$message .= "--" . $mimeboundary . "\r\n";
+			$message .= "Content-Description: Delivery report\r\n";
+			$message .= "Content-Type: message/delivery-status\r\n";
+			$message .= "\r\n";
+			$message .= "Reporting-MTA: dns; " . $host . "\r\n";
+			$message .= "X-Postfix-Queue-ID: " . strtoupper(self::MIME_RandomString(10)) . "\r\n";
+			$message .= "X-Postfix-Sender: rfc822; " . $sender . "\r\n";
+			$message .= "Arrival-Date: " . date("D, d M Y H:i:s O") . "\r\n";
+			$message .= "\r\n";
+			$message .= "Final-Recipient: rfc822; " . $finalrecipient . "\r\n";
+			$message .= "Original-Recipient: rfc822; " . $origrecipient . "\r\n";
+			$message .= "Action: " . $action . "\r\n";
+			$message .= "Status: " . $status . "\r\n";
+			$message .= "Diagnostic-Code: x-unix; " . $diagcode . "\r\n";
+			$message .= "\r\n";
+
+			if ($origmsg != "")
+			{
+				$message .= "--" . $mimeboundary . "\r\n";
+				$message .= "Content-Description: Undelivered Message\r\n";
+				$message .= "Content-Type: message/rfc822\r\n";
+				$message .= "Content-Transfer-Encoding: 8bit\r\n";
+				$message .= "\r\n";
+
+				$message .= $origmsg;
+				$message .= "\r\n";
+			}
+
+			$message .= "--" . $mimeboundary . "--\r\n";
+
+			return array("success" => true, "toaddr" => $toaddr, "fromaddr" => $fromaddr, "headers" => $destheaders, "subject" => $subject, "message" => $message);
+		}
+
 
 		public static function SendEmail($fromaddr, $toaddr, $subject, $options = array())
 		{
