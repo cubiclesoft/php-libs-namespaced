@@ -296,7 +296,7 @@
 								if (!isset($pipes[$num2]) || $pipes[$num2] !== false)  fclose($client->fp);
 								else
 								{
-									$pipes[$num2] = $fp;
+									$pipes[$num2] = $client->fp;
 
 									$pipesleft--;
 
@@ -538,7 +538,7 @@
 					if ($timeleft < 0)  $timeleft = 0;
 				}
 
-				if (!count($readfps) && !count($writefps))  usleep(($timeleft !== false && $timeleft < 0.25 ? $timeleft : 250000));
+				if (!count($readfps) && !count($writefps))  usleep(($timeleft !== false && $timeleft < 0.25 ? (int)($timeleft * 1000000) : 250000));
 				else
 				{
 					$exceptfps = NULL;

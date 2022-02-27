@@ -419,6 +419,8 @@
 
 								$this->clients[$id] = $client;
 								unset($this->initclients[$id]);
+
+								$result["clients"][$id] = $client;
 							}
 							else if ($result2 === false)
 							{
@@ -473,7 +475,7 @@
 
 		public function GetClient($id)
 		{
-			return (isset($this->client[$id]) ? $this->client[$id] : false);
+			return (isset($this->clients[$id]) ? $this->clients[$id] : false);
 		}
 
 		public function DetachClient($id)
