@@ -1148,12 +1148,14 @@
 			return ($this->x < $this->y);
 		}
 
-		public function current(): mixed
+		#[\ReturnTypeWillChange]
+		public function current()
 		{
 			return $this->tfn->Get($this->ids[$this->x]);
 		}
 
-		public function key(): mixed
+		#[\ReturnTypeWillChange]
+		public function key()
 		{
 			return $this->ids[$this->x];
 		}
