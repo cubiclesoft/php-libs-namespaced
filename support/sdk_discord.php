@@ -66,7 +66,7 @@
 				)
 			);
 
-			if ($method === "POST" || $method === "PUT")
+			if ($method === "POST" || $method === "PUT" || $method === "PATCH")
 			{
 				$options2["headers"]["Content-Type"] = "application/json";
 				$options2["body"] = json_encode($postvars, JSON_UNESCAPED_SLASHES);
