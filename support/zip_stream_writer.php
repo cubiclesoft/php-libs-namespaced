@@ -2,7 +2,7 @@
 	namespace CubicleSoft;
 ?><?php
 	// ZIP file stream writer.  Uses DeflateStream and CRC32Stream.
-	// (C) 2020 CubicleSoft.  All Rights Reserved.
+	// (C) 2023 CubicleSoft.  All Rights Reserved.
 
 	// NOTE:  There is no such thing as a ZipStreamReader.  ZIP files have to be complete in order to read them.
 	class ZipStreamWriter
@@ -338,7 +338,7 @@
 			if (!isset($options["last_modified"]))  $options["last_modified"] = time();
 
 			$options["compress_method"] = ($deflatesupported ? self::COMPRESS_METHOD_DEFLATE : self::COMPRESS_METHOD_STORE);
-			$options["crc32"] = 0;
+			$options["crc32"] = (isset($options["crc32"]) ? (int)$options["crc32"] : 0);
 			$options["compressed_size"] = 0;
 			$options["filename"] = $filename;
 			$options["disk_start_num"] = $this->disknum;
